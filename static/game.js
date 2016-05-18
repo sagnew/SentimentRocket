@@ -120,7 +120,14 @@ class Star extends Element {
   }
 }
 
-// let earth = new Sprite(ship.x - 75, ship.y + ship.height, 0, 0, 300, 300, 'http://makepixelart.com/peoplepods/files/images/8975.resized.png');
+class Laser extends Element {
+  constructor() {
+    const x = randInt(globalScreenWidth);
+    super(x, 0, 0, 5, 5, 50);
+    this.color = '#ff0000';
+  }
+}
+
 let sky = new Element(0, 0, 0, 0, globalScreenWidth, globalScreenHeight - 100, '#3399ff');
 let ground = new Element(0, sky.height, 0, 0, globalScreenWidth, globalScreenHeight - sky.height, '#CD853F');
 let atmosphereStage1 = new Element(0, 0, 0, 0, globalScreenWidth, globalScreenHeight, ' #0000FF');
@@ -225,19 +232,19 @@ socket.on('sms', (sentiment) => {
     return;
   }
 
-  // Happy messages increase the velocity. Negative messages decrease.
+  // Positive messages increase the velocity. Negative messages fires a laser.
   if (sentiment === 'positive') {
     globalVelocity += VELOCITY_INTERVAL;
   } else if (sentiment === 'negative') {
-    globalVelocity -= VELOCITY_INTERVAL;
-    if (globalVelocity < 0) {
-      globalVelocity = 0;
+    if (hyperspace === 0) {
+      elements.push(new Laser());
     }
   }
 });
 
 // Modify earth's move function to make it move like one of the stars.
 // Why did I do this here? Because I needed it to work quickly.
+// I didn't use () => {} because I don't want this to bind from the current scope.
 sky.move = ground.move = function() {
   this.y += globalVelocity;
 };
