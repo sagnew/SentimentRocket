@@ -9,7 +9,7 @@ const FPS = 60;
 const VELOCITY_INTERVAL = 5;
 
 // The velocity at which things will move at "hyperspeed"
-const HYPERSPEED_VELOCITY = 30;
+const HYPERSPEED_VELOCITY = 5;
 
 const socket = io();
 const randInt = (max) => {
@@ -28,7 +28,7 @@ let globalVelocity = 0;
 // 0 -> Normal
 // 1 -> White stars become lines
 // 2 -> rainbow stars
-let hyperspace = 0;
+let stage = 0;
 
 class Element {
 
@@ -90,7 +90,7 @@ class Star extends Element {
     super(width, y, 0, globalVelocity, 5, 5);
     this.colors = ['#FFFFFF', '#ff0000', '#0000ff', '#00ff00', '#ffff00', '#8a2be2'];
 
-    if (hyperspace > 0) {
+    if (stage > 0) {
       this.color = this.colors[randInt(this.colors.length)];
     } else {
       this.color = '#FFFFFF'
@@ -105,7 +105,7 @@ class Star extends Element {
     let rectStart = this.y;
     let rectHeight = this.height;
 
-    if (hyperspace === 1) {
+    if (stage === 1) {
       rectStart = this.hyperspeedStart;
       rectHeight = this.y - this.hyperspeedStart;
 
@@ -128,10 +128,33 @@ class Laser extends Element {
   }
 }
 
+class Gauge extends Element {
+  constructor(x, y, shipHeight) {
+    // shipHeight because I am trying to line the gauge up with the ship vertically.
+    super(x, y, 0, 0, 100, globalScreenHeight - shipHeight - y);
+    this.color = '#ff0000';
+  }
+
+  draw() {
+    // How far up the rectangle will be drawn.
+    let rectHeight = (globalVelocity/HYPERSPEED_VELOCITY) * this.height;
+
+    // Draw the border.
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
+
+    // Draw the gauge.
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x, this.y + this.height, this.width, -rectHeight);
+    ctx.fillStyle = '#000000';
+  }
+}
+
 let sky = new Element(0, 0, 0, 0, globalScreenWidth, globalScreenHeight - 100, '#3399ff');
 let ground = new Element(0, sky.height, 0, 0, globalScreenWidth, globalScreenHeight - sky.height, '#CD853F');
 let atmosphereStage1 = new Element(0, 0, 0, 0, globalScreenWidth, globalScreenHeight, ' #0000FF');
 let ship = new Sprite(globalScreenWidth/2, sky.height - ground.height, 0, 0, 125, 125, 'http://vignette1.wikia.nocookie.net/chickeninvaders/images/d/d7/Galaga_ship.png/revision/latest?cb=20150307025143');
+let gauge = new Gauge(7*globalScreenWidth/8, globalScreenHeight/6, ship.height);
 
 let initializeStars = () => {
   // Generate randomly placed stars.
@@ -172,9 +195,12 @@ let gameLoop = () => {
   globalScreenWidth = $('#screen-container').width();
   globalScreenHeight = window.innerHeight;
 
-  if (hyperspace === 0 && globalVelocity > HYPERSPEED_VELOCITY) {
-    hyperspace = 1;
+  if (stage === 0 && globalVelocity > HYPERSPEED_VELOCITY) {
+    stage = 1;
     globalVelocity = 5;
+
+    // Remove the gauge from the elements array.
+    elements.splice(elements.length - 1, 1);
 
     // Set a marker for where each star was when hyperspeed was started.
     for (let element of elements) {
@@ -193,16 +219,17 @@ let gameLoop = () => {
       if (elements[i].y >= 0 && elements[i].y <= globalScreenHeight) {
         // elements[i] is currently on the screen so it can be moved.
         elements[i].move();
-      } else if (hyperspace === 1) {
+      } else if (stage === 1) {
         elements[i].move = function() {};
 
         if (allStarsAreAtTheBottom()) {
+          console.log('Made it');
           elements = initializeStars();
           elements.push(ship);
           globalVelocity = 10;
 
           // Kick it into overdrive.
-          hyperspace = 2;
+          stage = 2;
         }
       } else {
 
@@ -228,7 +255,7 @@ let gameLoop = () => {
 // Listen for SMS events.
 socket.on('sms', (sentiment) => {
   console.log(sentiment);
-  if (hyperspace > 0) {
+  if (stage > 0) {
     return;
   }
 
@@ -236,7 +263,7 @@ socket.on('sms', (sentiment) => {
   if (sentiment === 'positive') {
     globalVelocity += VELOCITY_INTERVAL;
   } else if (sentiment === 'negative') {
-    if (hyperspace === 0) {
+    if (stage === 0) {
       elements.push(new Laser());
     }
   }
@@ -253,6 +280,7 @@ sky.move = ground.move = function() {
 elements.push(sky);
 elements.push(ground);
 elements.push(ship);
+elements.push(gauge);
 
 // Run the game loop forever. FOREVER.
 setInterval(gameLoop, 1000 / FPS);
