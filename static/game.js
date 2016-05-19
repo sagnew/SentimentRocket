@@ -9,7 +9,7 @@ const FPS = 60;
 const VELOCITY_INTERVAL = 5;
 
 // The velocity at which things will move at "hyperspeed"
-const HYPERSPEED_VELOCITY = 5;
+const HYPERSPEED_VELOCITY = 25;
 
 const socket = io();
 const randInt = (max) => {
@@ -136,17 +136,19 @@ class Gauge extends Element {
   }
 
   draw() {
-    // How far up the rectangle will be drawn.
-    let rectHeight = (globalVelocity/HYPERSPEED_VELOCITY) * this.height;
+    if (stage === 0) {
+      // How far up the rectangle will be drawn.
+      let rectHeight = (globalVelocity/HYPERSPEED_VELOCITY) * this.height;
 
-    // Draw the border.
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.strokeRect(this.x, this.y, this.width, this.height);
+      // Draw the border.
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.strokeRect(this.x, this.y, this.width, this.height);
 
-    // Draw the gauge.
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y + this.height, this.width, -rectHeight);
-    ctx.fillStyle = '#000000';
+      // Draw the gauge.
+      ctx.fillStyle = this.color;
+      ctx.fillRect(this.x, this.y + this.height, this.width, -rectHeight);
+      ctx.fillStyle = '#000000';
+    }
   }
 }
 
@@ -177,7 +179,7 @@ let elements = initializeStars();
 // during hyperspace. If so, we will reset the grid.
 let allStarsAreAtTheBottom = () => {
   for (let element of elements) {
-    if (element !== ship) {
+    if (element instanceof Star) {
       if (element.y < globalScreenHeight) {
         return false;
       }
@@ -200,11 +202,12 @@ let gameLoop = () => {
     globalVelocity = 5;
 
     // Remove the gauge from the elements array.
+    console.log('Removing gauge.');
     elements.splice(elements.length - 1, 1);
 
     // Set a marker for where each star was when hyperspeed was started.
     for (let element of elements) {
-      if (element !== ship) {
+      if (element instanceof Star) {
         element.hyperspeedStart = element.y;
       }
     }
@@ -214,38 +217,37 @@ let gameLoop = () => {
 
   // Draw all of the elements on the screen.
   for (let i = 0; i < elements.length; i++) {
-    if (elements[i].image !== ship) {
+    if (randInt(10000) === 10) {
+      // console.log('Still drawing');
+    }
 
-      if (elements[i].y >= 0 && elements[i].y <= globalScreenHeight) {
-        // elements[i] is currently on the screen so it can be moved.
-        elements[i].move();
-      } else if (stage === 1) {
-        elements[i].move = function() {};
+    if (elements[i].y >= 0 && elements[i].y <= globalScreenHeight) {
+      // elements[i] is currently on the screen so it can be moved.
+      elements[i].move();
+    } else if (stage === 1) {
+      elements[i].move = function() {};
 
-        if (allStarsAreAtTheBottom()) {
-          console.log('Made it');
-          elements = initializeStars();
-          elements.push(ship);
-          globalVelocity = 10;
+      if (allStarsAreAtTheBottom()) {
+        elements = initializeStars();
+        elements.push(ship);
+        globalVelocity = 10;
 
-          // Kick it into overdrive.
-          stage = 2;
-        }
-      } else {
+        // Kick it into overdrive.
+        stage = 2;
+      }
+    } else {
 
-        // elements[i] is off the screen. Spawn a new star.
-        let newPosition = 0;
-        if (globalVelocity < 0) {
-          newPosition = globalScreenHeight;
-        }
-
-        let newStar = new Star(newPosition);
-        // if (isHyperspeed) {
-        //   newStar.hyperspeedStart = 0;
-        // }
-        elements[i] = newStar;
+      // elements[i] is off the screen. Spawn a new star.
+      let newPosition = 0;
+      if (globalVelocity < 0) {
+        newPosition = globalScreenHeight;
       }
 
+      let newStar = new Star(newPosition);
+      // if (isHyperspeed) {
+      //   newStar.hyperspeedStart = 0;
+      // }
+      elements[i] = newStar;
     }
 
     elements[i].draw();
