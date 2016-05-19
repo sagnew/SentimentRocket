@@ -155,14 +155,14 @@ class Gauge extends Element {
 let sky = new Element(0, 0, 0, 0, globalScreenWidth, globalScreenHeight - 100, '#3399ff');
 let ground = new Element(0, sky.height, 0, 0, globalScreenWidth, globalScreenHeight - sky.height, '#CD853F');
 let atmosphereStage1 = new Element(0, 0, 0, 0, globalScreenWidth, globalScreenHeight, ' #0000FF');
-let ship = new Sprite(globalScreenWidth/2, sky.height - ground.height, 0, 0, 125, 125, 'http://vignette1.wikia.nocookie.net/chickeninvaders/images/d/d7/Galaga_ship.png/revision/latest?cb=20150307025143');
+let ship = new Sprite(globalScreenWidth/2, sky.height - ground.height, 0, 0, 125, 125, 'http://i.imgur.com/TUZwV9i.png');
 let gauge = new Gauge(7*globalScreenWidth/8, globalScreenHeight/6, ship.height);
 
 let initializeStars = () => {
   // Generate randomly placed stars.
   let arr = [];
 
-  for(let i = 0; i < 300; i += 1) {
+  for(let i = 0; i < 100; i += 1) {
     let randomHeight = randInt(globalScreenHeight);
     let star = new Star(randomHeight);
 
