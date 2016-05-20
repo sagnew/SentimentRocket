@@ -6,10 +6,10 @@ const FPS = 60;
 //
 // Units: Pixels per frame per net positive sentiment.
 // I.E. Acceleration for positive sentiment text messages.
-const VELOCITY_INTERVAL = 5;
+const VELOCITY_INTERVAL = 0.5;
 
 // The velocity at which things will move at "hyperspeed"
-const HYPERSPEED_VELOCITY = 25;
+const HYPERSPEED_VELOCITY = 500;
 
 const socket = io();
 const randInt = (max) => {
@@ -24,6 +24,8 @@ let globalScreenHeight = window.innerHeight;
 
 // The number of pixels per frame that all non ship objects will move by.
 let globalVelocity = 0;
+
+let positiveMessages = 0;
 
 // 0 -> Normal
 // 1 -> White stars become lines
@@ -263,7 +265,10 @@ socket.on('sms', (sentiment) => {
 
   // Positive messages increase the velocity. Negative messages fires a laser.
   if (sentiment === 'positive') {
-    globalVelocity += VELOCITY_INTERVAL;
+    positiveMessages += 1;
+    if (positiveMessages % 10 === 0) {
+      globalVelocity += VELOCITY_INTERVAL;
+    }
   } else if (sentiment === 'negative') {
     if (stage === 0) {
       elements.push(new Laser());
