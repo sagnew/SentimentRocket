@@ -6,10 +6,19 @@ const FPS = 60;
 //
 // Units: Pixels per frame per net positive sentiment.
 // I.E. Acceleration for positive sentiment text messages.
-const VELOCITY_INTERVAL = 0.5;
+const VELOCITY_INTERVAL = 1;
 
 // The velocity at which things will move at "hyperspeed"
-const HYPERSPEED_VELOCITY = 500;
+const HYPERSPEED_VELOCITY = 25;
+
+// The number of positive messages before velocity increases.
+// If this is 20 then every 20 positive messages will increase the velocity.
+const POSITIVE_MESSAGE_LIMIT = 25;
+
+// The number of negative messages required to fire a laser.
+const NEGATIVE_MESSAGE_LIMIT = 5;
+
+const NUMBER_OF_STARS = 100;
 
 const socket = io();
 const randInt = (max) => {
@@ -25,7 +34,11 @@ let globalScreenHeight = window.innerHeight;
 // The number of pixels per frame that all non ship objects will move by.
 let globalVelocity = 0;
 
+// Number of positive messages since the last velocity increase.
 let positiveMessages = 0;
+
+// Number of negative messages since the last laser was fired.
+let negativeMessages = 0;
 
 // 0 -> Normal
 // 1 -> White stars become lines
@@ -128,6 +141,13 @@ class Laser extends Element {
     super(x, 0, 0, 5, 5, 50);
     this.color = '#ff0000';
   }
+
+  draw() {
+    if (stage === 0) {
+      ctx.fillStyle = this.color;
+      ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+  }
 }
 
 class Gauge extends Element {
@@ -164,7 +184,7 @@ let initializeStars = () => {
   // Generate randomly placed stars.
   let arr = [];
 
-  for(let i = 0; i < 100; i += 1) {
+  for(let i = 0; i < NUMBER_OF_STARS; i += 1) {
     let randomHeight = randInt(globalScreenHeight);
     let star = new Star(randomHeight);
 
@@ -219,10 +239,6 @@ let gameLoop = () => {
 
   // Draw all of the elements on the screen.
   for (let i = 0; i < elements.length; i++) {
-    if (randInt(10000) === 10) {
-      // console.log('Still drawing');
-    }
-
     if (elements[i].y >= 0 && elements[i].y <= globalScreenHeight) {
       // elements[i] is currently on the screen so it can be moved.
       elements[i].move();
@@ -266,11 +282,14 @@ socket.on('sms', (sentiment) => {
   // Positive messages increase the velocity. Negative messages fires a laser.
   if (sentiment === 'positive') {
     positiveMessages += 1;
-    if (positiveMessages % 10 === 0) {
+    if (positiveMessages > POSITIVE_MESSAGE_LIMIT) {
+      positiveMessages = 0;
       globalVelocity += VELOCITY_INTERVAL;
     }
   } else if (sentiment === 'negative') {
-    if (stage === 0) {
+    negativeMessages += 1;
+    if (negativeMessages > NEGATIVE_MESSAGE_LIMIT) {
+      negativeMessages = 0;
       elements.push(new Laser());
     }
   }
