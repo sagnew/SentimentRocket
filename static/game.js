@@ -206,7 +206,7 @@ class Gauge extends Element {
   }
 }
 
-let sky = new Element(0, 0, 0, 0, globalScreenWidth, globalScreenHeight - 100, '#3399ff');
+let sky = new Sprite(0, 0, 0, 0, globalScreenWidth, globalScreenHeight - 100, 'http://img14.deviantart.net/ff6c/i/2012/009/1/a/sky_gradient_stock_by_nikhilmoh-d4lt15o.jpg');
 let ground = new Element(0, sky.height, 0, 0, globalScreenWidth, globalScreenHeight - sky.height, '#CD853F');
 let atmosphereStage1 = new Element(0, 0, 0, 0, globalScreenWidth, globalScreenHeight, ' #0000FF');
 let ship = new Sprite(globalScreenWidth/2, sky.height - ground.height, 0, 0, 125, 125, 'http://i.imgur.com/TUZwV9i.png');
@@ -270,7 +270,7 @@ let gameLoop = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw all of the elements on the screen.
-  for (let i = 0; i < elements.length; i++) {
+  for (let i = 0; i < elements.length; i += 1) {
     if (elements[i].y >= 0 && elements[i].y <= globalScreenHeight) {
       // elements[i] is currently on the screen so it can be moved.
       elements[i].move();
@@ -333,6 +333,27 @@ socket.on('sms', (sentiment) => {
 sky.move = ground.move = function() {
   this.y += globalVelocity;
 };
+
+// sky.draw = function() {
+//   // Going to draw a gradient of these colors in order from bottom to top.
+//   // This is the "full" array. Experimenting with adding and removing some colors.
+//   // let colors = ['#000033', '#00004c', '#000066', '#00007f', '#000099', '#0000b2', '#0000cc', '#0000e5', '#0000ff'];
+//   let colors = ['#0000b2', '#0000cc', '#0000e5', '#0000ff'];
+//   let currentHeight = this.y;
+//
+//   // The gradient will be made until we are a third away from the bottom, where the normal sky color will be drawn.
+//   let maxHeight = this.height/3;
+//   let heightInterval = maxHeight / colors.length;
+//
+//   for (let i = 0; i < colors.length - 1; i += 1) {
+//     ctx.fillStyle = colors[i];
+//     ctx.fillRect(this.x, currentHeight, this.width, currentHeight + heightInterval);
+//     currentHeight += heightInterval;
+//   }
+//
+//   ctx.fillStyle = colors[colors.length - 1];
+//   ctx.fillRect(this.x, currentHeight, this.width, this.height);
+// };
 
 // Modify the ship's draw function to make it check for collisions with lasers.
 ship.draw = function() {
