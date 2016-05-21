@@ -83,6 +83,38 @@ class Element {
     this.y += this.vy;
   }
 
+  // Helper functions for collision detection.
+  left() {
+    return this.x;
+  }
+
+  right() {
+    return this.x + this.width;
+  }
+
+  upperBound() {
+    return this.y;
+  }
+
+  lowerBound() {
+    return this.y + this.height;
+  }
+
+  // Determines whether or not this element currently collides with another element.
+  collidesWith(element) {
+
+    let horizontalIntersection = (this.left() < element.right() && this.left > element.left()
+                                  || this.right() > element.left() && this.right() < element.right());
+    let verticalIntersection = (this.upperBound() < element.lowerBound() && this.upperBound() > element.upperBound()
+                                  || this.lowerBound() > element.upperBound() && this.lowerBound() < element.lowerBound());
+
+    if (horizontalIntersection && verticalIntersection) {
+      return true;
+    }
+
+    return false;
+  }
+
 }
 
 class Sprite extends Element {
@@ -221,7 +253,7 @@ let gameLoop = () => {
 
   if (stage === 0 && globalVelocity > HYPERSPEED_VELOCITY) {
     stage = 1;
-    globalVelocity = 5;
+    globalVelocity = 10;
 
     // Remove the gauge from the elements array.
     console.log('Removing gauge.');
@@ -300,6 +332,26 @@ socket.on('sms', (sentiment) => {
 // I didn't use () => {} because I don't want this to bind from the current scope.
 sky.move = ground.move = function() {
   this.y += globalVelocity;
+};
+
+// Modify the ship's draw function to make it check for collisions with lasers.
+ship.draw = function() {
+  for (let element of elements) {
+
+    // Check to see if the ship collides with a laser.
+    if (element instanceof Laser) {
+      if (element.collidesWith(this)) {
+        let newImage = new Image();
+        newImage.src = 'http://i.imgur.com/YufxX0I.png';
+        ctx.drawImage(newImage, this.x, this.y, this.width, this.height);
+
+        return;
+      }
+    }
+
+  }
+
+  ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 };
 
 // Push the new elements onto the array.
