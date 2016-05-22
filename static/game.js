@@ -210,6 +210,7 @@ let sky = new Sprite(0, 0, 0, 0, globalScreenWidth, globalScreenHeight - 100, 'h
 let ground = new Element(0, sky.height, 0, 0, globalScreenWidth, globalScreenHeight - sky.height, '#CD853F');
 let atmosphereStage1 = new Element(0, 0, 0, 0, globalScreenWidth, globalScreenHeight, ' #0000FF');
 let ship = new Sprite(globalScreenWidth/2, sky.height - ground.height, 0, 0, 125, 125, 'http://i.imgur.com/TUZwV9i.png');
+let fire = new Sprite(ship.x + 25, ship.y + 55, 0, 0, 75, 75, 'http://i.imgur.com/eGmVxAZ.png');
 let gauge = new Gauge(7*globalScreenWidth/8, globalScreenHeight/6, ship.height);
 
 let initializeStars = () => {
@@ -264,6 +265,13 @@ let gameLoop = () => {
       if (element instanceof Star) {
         element.hyperspeedStart = element.y;
       }
+    }
+  }
+
+  if (stage === 0 && globalVelocity > 0) {
+    if (!elements.includes(fire)) {
+      ship.y -= 75;
+      elements.push(fire);
     }
   }
 

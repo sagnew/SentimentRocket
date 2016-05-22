@@ -5,9 +5,9 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-// Run server to listen on port 5000.
-const server = app.listen(5000, () => {
-  console.log('listening on *:5000');
+// Run server to listen on port 8000.
+const server = app.listen(8000, () => {
+  console.log('listening on *:8000');
 });
 
 const io = require('socket.io')(server);
@@ -22,9 +22,17 @@ app.get('/', (req, res) => {
 
 app.post('/sms', (req, res) => {
   let twiml = twilio.TwimlResponse();
-  let sentiment = 'positive'; // For now
+  let addOns = JSON.parse(req.body.AddOns);
 
-  io.emit('sms', sentiment);
+  if (addOns.results.ibm_watson_sentiment.result.docSentiment !== undefined) {
+    let sentiment = addOns.results.ibm_watson_sentiment.result.docSentiment.type;
+    io.emit('sms', sentiment);
+    console.log(sentiment);
+  } else {
+    console.log('Sentiment failed');
+  }
+
   twiml.message('Thanks for joining my demo :)');
+
   res.send(twiml.toString());
 });
