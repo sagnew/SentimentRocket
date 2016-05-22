@@ -29,7 +29,7 @@ const canvas = document.getElementById('screen');
 const ctx = canvas.getContext('2d');
 
 let globalScreenWidth = $('#screen-container').width();
-let globalScreenHeight = window.innerHeight;
+let globalScreenHeight = window.innerHeight - $('#callout').height();
 
 // The number of pixels per frame that all non ship objects will move by.
 let globalVelocity = 0;
@@ -249,7 +249,7 @@ let gameLoop = () => {
   canvas.width = globalScreenWidth;
 
   globalScreenWidth = $('#screen-container').width();
-  globalScreenHeight = window.innerHeight;
+  globalScreenHeight = window.innerHeight - $('#callout').height();
 
   if (stage === 0 && globalVelocity > HYPERSPEED_VELOCITY) {
     stage = 1;

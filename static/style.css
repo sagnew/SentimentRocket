@@ -14,3 +14,7 @@ canvas {
   background-color: #000000;
   display:block;
 }
+
+#short-code {
+    color: red;
+}
