@@ -313,8 +313,14 @@ let gameLoop = () => {
 };
 
 // Listen for SMS events.
-socket.on('sms', (sentiment) => {
-  console.log(sentiment);
+socket.on('sms', (data) => {
+  let color = 'white';
+  let sentiment = data.sentiment;
+  let number = data.number;
+  let emoji = '😐';
+
+  console.log(data);
+
   if (stage > 0) {
     return;
   }
@@ -326,13 +332,28 @@ socket.on('sms', (sentiment) => {
       positiveMessages = 0;
       globalVelocity += VELOCITY_INTERVAL;
     }
+
+    emoji = '😀 ';
   } else if (sentiment === 'negative') {
     negativeMessages += 1;
     if (negativeMessages > NEGATIVE_MESSAGE_LIMIT) {
       negativeMessages = 0;
       elements.push(new Laser());
     }
+
+    emoji = '😭 ';
   }
+
+  let id = randInt(1000);
+  $('#phone-numbers').append('<div id="' + id + '" class="' + sentiment + '">' + number + ' ' + emoji + '</div>');
+
+  let $number = $('#' + id);
+  $number.hide();
+  $number.toggle('fade');
+  window.setTimeout(() => {
+    $number.toggle('fade');
+    $number.remove();
+  }, 5000);
 });
 
 // Modify earth's move function to make it move like one of the stars.
