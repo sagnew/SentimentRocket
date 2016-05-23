@@ -1,3 +1,5 @@
+const FPS = 60;
+
 // The number of pixels per frame that the global velocity will increase by
 // when positive sentiment text messages are received.
 //
@@ -307,14 +309,13 @@ let gameLoop = () => {
 
     elements[i].draw();
   }
-  requestAnimationFrame(gameLoop);
 };
 
 // Listen for SMS events.
 socket.on('sms', (data) => {
   let color = 'white';
   let sentiment = data.sentiment;
-  let number = data.number;
+  let number = data.number.substr(0, data.number.length - 4) + 'xxxx';
   let emoji = '😐';
 
   console.log(data);
@@ -412,4 +413,4 @@ elements.push(gauge);
 $('#phone-numbers').height(globalScreenHeight);
 
 // Run the game loop forever. FOREVER.
-requestAnimationFrame(gameLoop);
+setInterval(gameLoop, 1000 / FPS);

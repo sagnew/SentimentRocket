@@ -17,4 +17,24 @@ canvas {
 
 #short-code {
     color: red;
+    height: 100%;
+}
+
+#negative {
+    color: red;
+}
+
+#positive {
+    color: 'green';
+}
+
+#negative {
+    color: 'white';
+}
+
+#phone-numbers {
+  background-color: #000000;
+  color: red;
+  margin: 0;
+  padding: 0;
 }
