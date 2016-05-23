@@ -181,6 +181,24 @@ class Laser extends Element {
   }
 }
 
+class PhoneNumber extends Element {
+  constructor(x, y, text) {
+    // shipHeight because I am trying to line the gauge up with the ship vertically.
+    super(x, y, 0, 0);
+    this.text = text;
+  }
+
+  draw() {
+    ctx.font = "24px serif";
+    ctx.fillStyle = 'red';
+    ctx.fillText(this.text, this.x, this.y);
+  }
+
+  move() {
+    this.x -= 2;
+  }
+}
+
 class Gauge extends Element {
   constructor(x, y, shipHeight) {
     // shipHeight because I am trying to line the gauge up with the ship vertically.
@@ -228,6 +246,9 @@ let initializeStars = () => {
 
 // All of the game elements on the screen.
 let elements = initializeStars();
+
+// The phone numbers who texted into the game
+let numbers = [];
 
 // Checks to see if all of the stars have reached the bottom of the screen
 // during hyperspace. If so, we will reset the grid.
@@ -309,6 +330,11 @@ let gameLoop = () => {
 
     elements[i].draw();
   }
+
+  for (let number of numbers) {
+    number.draw();
+    number.move();
+  }
 };
 
 // Listen for SMS events.
@@ -343,16 +369,15 @@ socket.on('sms', (data) => {
     emoji = '😭 ';
   }
 
-  let id = randInt(1000);
-  $('#phone-numbers').append('<div id="' + id + '" class="' + sentiment + '">' + number + ' ' + emoji + '</div>');
+  let x = globalScreenWidth;
+  if (numbers.length > 0) {
+    if (numbers[numbers.length - 1].x + 250 >= globalScreenWidth) {
+      x = numbers[numbers.length - 1].x + 250;
+    }
+  }
+  numbers.push(new PhoneNumber(x, 30, emoji + ' ' + number));
 
-  let $number = $('#' + id);
-  $number.hide();
-  $number.toggle('fade');
-  window.setTimeout(() => {
-    $number.toggle('fade');
-    $number.remove();
-  }, 5000);
+
 });
 
 // Modify earth's move function to make it move like one of the stars.
@@ -408,9 +433,6 @@ elements.push(sky);
 elements.push(ground);
 elements.push(ship);
 elements.push(gauge);
-
-// I am a bad person
-$('#phone-numbers').height(globalScreenHeight);
 
 // Run the game loop forever. FOREVER.
 setInterval(gameLoop, 1000 / FPS);

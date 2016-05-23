@@ -24,16 +24,17 @@ app.post('/sms', (req, res) => {
   let twiml = twilio.TwimlResponse();
   let addOns = JSON.parse(req.body.AddOns);
   let sentimentStatus = addOns.results.ibm_watson_sentiment.status;
+  console.log(req.body.From);
 
   if (sentimentStatus === 'successful') {
     let sentiment = addOns.results.ibm_watson_sentiment.result.docSentiment.type;
-    io.emit('sms', sentiment);
+    io.emit('sms', { sentiment: sentiment, number: req.body.From });
     console.log(sentiment);
   } else {
     console.log('Sentiment failed');
   }
 
-  twiml.message('Thanks for joining my demo :)');
+  twiml.message('Thanks for playing.  Join us tonight at Bash for more fun & games');
 
   res.send(twiml.toString());
 });
