@@ -1,6 +1,3 @@
-// The number of frames rendered per second.
-const FPS = 60;
-
 // The number of pixels per frame that the global velocity will increase by
 // when positive sentiment text messages are received.
 //
@@ -310,6 +307,7 @@ let gameLoop = () => {
 
     elements[i].draw();
   }
+  requestAnimationFrame(gameLoop);
 };
 
 // Listen for SMS events.
@@ -410,5 +408,8 @@ elements.push(ground);
 elements.push(ship);
 elements.push(gauge);
 
+// I am a bad person
+$('#phone-numbers').height(globalScreenHeight);
+
 // Run the game loop forever. FOREVER.
-setInterval(gameLoop, 1000 / FPS);
+requestAnimationFrame(gameLoop);
