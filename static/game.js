@@ -255,7 +255,7 @@ let numbers = [];
 let allStarsAreAtTheBottom = () => {
   for (let element of elements) {
     if (element instanceof Star) {
-      if (element.y < globalScreenHeight) {
+      if (element.y < ship.y) {
         return false;
       }
     }
@@ -339,7 +339,6 @@ let gameLoop = () => {
 
 // Listen for SMS events.
 socket.on('sms', (data) => {
-  let color = 'white';
   let sentiment = data.sentiment;
   let number = data.number.substr(0, data.number.length - 4) + 'xxxx';
   let emoji = '😐';
