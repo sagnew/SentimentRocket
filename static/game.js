@@ -8,7 +8,7 @@ const FPS = 60;
 const VELOCITY_INTERVAL = 1;
 
 // The velocity at which things will move at "hyperspeed"
-const HYPERSPEED_VELOCITY = 25;
+const HYPERSPEED_VELOCITY = 20;
 
 // The number of positive messages before velocity increases.
 // If this is 20 then every 20 positive messages will increase the velocity.
@@ -258,7 +258,7 @@ let numbers = [];
 let allStarsAreAtTheBottom = () => {
   for (let element of elements) {
     if (element instanceof Star) {
-      if (element.y < globalScreenHeight) {
+      if (element.y < ship.y) {
         return false;
       }
     }
@@ -342,7 +342,6 @@ let gameLoop = () => {
 
 // Listen for SMS events.
 socket.on('sms', (data) => {
-  let color = 'white';
   let sentiment = data.sentiment;
   let number = data.number.substr(0, data.number.length - 4) + 'xxxx';
   let emoji = '😐';
