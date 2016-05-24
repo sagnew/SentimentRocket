@@ -8,7 +8,7 @@ const FPS = 60;
 const VELOCITY_INTERVAL = 1;
 
 // The velocity at which things will move at "hyperspeed"
-const HYPERSPEED_VELOCITY = 20;
+const HYPERSPEED_VELOCITY = 15;
 
 // The number of positive messages before velocity increases.
 // If this is 20 then every 20 positive messages will increase the velocity.
@@ -432,7 +432,7 @@ ship.draw = function() {
 
 fire.toggleImage = function() {
   if (this.image.src === 'http://i.imgur.com/eGmVxAZ.png') {
-    this.image.src = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAgMAAAAhHED1AAAADFBMVEX/o0f////4OAD///+CFYjfAAAABHRSTlP///8AQCqp9AAAAMFJREFUeJzt2EEKwzAMBEB/sp/sJ9O0uCCEE3zezF5CFO0cDfE4Zt5njpL6fvdtAACASGCcqQvvmTr77gAAgHxgVbrDAADAM4Cr/Erz4AEAAJnATrkiAAAgE/j/RNSsZisIAABkATvl1QwAAGQBfViXdw4VAACQC4yZXQgAAGQC4yJ3CAAAyAUq9DqzwgAAwDOAWuzPFQIAAHKAfiFZkZ4OLG80AQBAPNDLAAAgE+hIhWp6GQAAZAJXUE/fBwAAMcAHLQube95RSfoAAAAASUVORK5CYII=';
+    this.image.src = 'http://i.imgur.com/tzis6PA.png';
   } else {
     this.image.src = 'http://i.imgur.com/eGmVxAZ.png'
   }
@@ -440,8 +440,9 @@ fire.toggleImage = function() {
 
 fire.draw = function() {
   fireAnimationFrames += 1;
-  if (fireAnimationFrames > 120) {
+  if (fireAnimationFrames > 30) {
     this.toggleImage();
+    fireAnimationFrames = 0;
   }
   ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 };
