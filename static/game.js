@@ -8,7 +8,7 @@ const FPS = 60;
 const VELOCITY_INTERVAL = 1;
 
 // The velocity at which things will move at "hyperspeed"
-const HYPERSPEED_VELOCITY = 15;
+const HYPERSPEED_VELOCITY = 30;
 
 // The number of positive messages before velocity increases.
 // If this is 20 then every 20 positive messages will increase the velocity.
@@ -26,6 +26,28 @@ const randInt = (max) => {
 
 const canvas = document.getElementById('screen');
 const ctx = canvas.getContext('2d');
+
+const drawRotatedImage = (image, x, y, angle) => {
+  let TO_RADIANS = Math.PI/180;
+
+	// save the current co-ordinate system
+	// before we screw with it
+	context.save();
+
+	// move to the middle of where we want to draw our image
+	context.translate(x, y);
+
+	// rotate around that point, converting our
+	// angle from degrees to radians
+	context.rotate(angle * TO_RADIANS);
+
+	// draw it up and to the left by half the width
+	// and height of the image
+	context.drawImage(image, -(image.width/2), -(image.height/2));
+
+	// and restore the co-ords to how they were when we began
+	context.restore();
+};
 
 let globalScreenWidth = $('#screen-container').width();
 let globalScreenHeight = window.innerHeight - $('#callout').height();
@@ -107,8 +129,8 @@ class Element {
 
     let horizontalIntersection = (this.left() < element.right() && this.left > element.left()
                                   || this.right() > element.left() && this.right() < element.right());
-    let verticalIntersection = (this.upperBound() < element.lowerBound() && this.upperBound() > element.upperBound()
-                                  || this.lowerBound() > element.upperBound() && this.lowerBound() < element.lowerBound());
+
+    let verticalIntersection = (this.lowerBound() > element.upperBound() && this.lowerBound() < element.lowerBound() - 100);
 
     if (horizontalIntersection && verticalIntersection) {
       return true;
@@ -412,15 +434,18 @@ sky.move = ground.move = function() {
 
 // Modify the ship's draw function to make it check for collisions with lasers.
 ship.draw = function() {
+  if (this.wasHit) {
+    return;
+  }
+
   for (let element of elements) {
 
     // Check to see if the ship collides with a laser.
     if (element instanceof Laser) {
       if (element.collidesWith(this)) {
-        let newImage = new Image();
-        newImage.src = 'http://i.imgur.com/YufxX0I.png';
-        ctx.drawImage(newImage, this.x, this.y, this.width, this.height);
-
+        this.wasHit = true;
+        this.image.src = 'http://i.imgur.com/YufxX0I.png';
+        this.shakeAfterImpact(1, this.x);
         return;
       }
     }
@@ -428,6 +453,34 @@ ship.draw = function() {
   }
 
   ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+
+};
+
+// Will refactor this later. I know it's not the best way to do what I want to do,
+// but I need this to work quickly.
+ship.shakeAfterImpact = function(iterations, originalX) {
+  if (!this.wasHit) {
+    return;
+  }
+
+  window.setTimeout(() => {
+    if (iterations % 2 === 0) {
+      this.x -= 3;
+    } else {
+      this.x += 3;
+    }
+
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+
+    if (iterations > 2) {
+      this.x = originalX;
+      this.wasHit = false;
+      this.image.src = 'http://i.imgur.com/TUZwV9i.png';
+      return;
+    }
+
+    this.shakeAfterImpact(iterations + 1, originalX);
+  }, 50);
 };
 
 fire.toggleImage = function() {

@@ -27,6 +27,7 @@ canvas {
 #short-code {
     color: red;
     height: 100%;
+    font-size: 60px;
 }
 
 #negative {
