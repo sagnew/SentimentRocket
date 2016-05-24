@@ -8,7 +8,7 @@ const FPS = 60;
 const VELOCITY_INTERVAL = 1;
 
 // The velocity at which things will move at "hyperspeed"
-const HYPERSPEED_VELOCITY = 25;
+const HYPERSPEED_VELOCITY = 20;
 
 // The number of positive messages before velocity increases.
 // If this is 20 then every 20 positive messages will increase the velocity.
