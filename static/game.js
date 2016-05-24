@@ -39,6 +39,9 @@ let positiveMessages = 0;
 // Number of negative messages since the last laser was fired.
 let negativeMessages = 0;
 
+// Number of frames since the fire animation switched.
+let fireAnimationFrames = 0;
+
 // 0 -> Normal
 // 1 -> White stars become lines
 // 2 -> rainbow stars
@@ -425,6 +428,22 @@ ship.draw = function() {
 
   }
 
+  ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+};
+
+fire.toggleImage = function() {
+  if (this.image.src === 'http://i.imgur.com/eGmVxAZ.png') {
+    this.image.src = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAgMAAAAhHED1AAAADFBMVEX/o0f////4OAD///+CFYjfAAAABHRSTlP///8AQCqp9AAAAMFJREFUeJzt2EEKwzAMBEB/sp/sJ9O0uCCEE3zezF5CFO0cDfE4Zt5njpL6fvdtAACASGCcqQvvmTr77gAAgHxgVbrDAADAM4Cr/Erz4AEAAJnATrkiAAAgE/j/RNSsZisIAABkATvl1QwAAGQBfViXdw4VAACQC4yZXQgAAGQC4yJ3CAAAyAUq9DqzwgAAwDOAWuzPFQIAAHKAfiFZkZ4OLG80AQBAPNDLAAAgE+hIhWp6GQAAZAJXUE/fBwAAMcAHLQube95RSfoAAAAASUVORK5CYII=';
+  } else {
+    this.image.src = 'http://i.imgur.com/eGmVxAZ.png'
+  }
+};
+
+fire.draw = function() {
+  fireAnimationFrames += 1;
+  if (fireAnimationFrames > 120) {
+    this.toggleImage();
+  }
   ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 };
 
