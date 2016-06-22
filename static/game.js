@@ -411,27 +411,6 @@ sky.move = ground.move = function() {
   this.y += globalVelocity;
 };
 
-// sky.draw = function() {
-//   // Going to draw a gradient of these colors in order from bottom to top.
-//   // This is the "full" array. Experimenting with adding and removing some colors.
-//   // let colors = ['#000033', '#00004c', '#000066', '#00007f', '#000099', '#0000b2', '#0000cc', '#0000e5', '#0000ff'];
-//   let colors = ['#0000b2', '#0000cc', '#0000e5', '#0000ff'];
-//   let currentHeight = this.y;
-//
-//   // The gradient will be made until we are a third away from the bottom, where the normal sky color will be drawn.
-//   let maxHeight = this.height/3;
-//   let heightInterval = maxHeight / colors.length;
-//
-//   for (let i = 0; i < colors.length - 1; i += 1) {
-//     ctx.fillStyle = colors[i];
-//     ctx.fillRect(this.x, currentHeight, this.width, currentHeight + heightInterval);
-//     currentHeight += heightInterval;
-//   }
-//
-//   ctx.fillStyle = colors[colors.length - 1];
-//   ctx.fillRect(this.x, currentHeight, this.width, this.height);
-// };
-
 // Modify the ship's draw function to make it check for collisions with lasers.
 ship.draw = function() {
   if (this.wasHit) {
