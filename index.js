@@ -21,13 +21,13 @@ app.get('/', (req, res) => {
 });
 
 app.post('/sms', (req, res) => {
-  let twiml = twilio.TwimlResponse();
-  let addOns = JSON.parse(req.body.AddOns);
-  let sentimentStatus = addOns.results.ibm_watson_sentiment.status;
+  var twiml = twilio.TwimlResponse();
+  var addOns = JSON.parse(req.body.AddOns);
+  var sentimentStatus = addOns.results.ibm_watson_sentiment.status;
   console.log(req.body.From);
 
   if (sentimentStatus === 'successful') {
-    let sentiment = addOns.results.ibm_watson_sentiment.result.docSentiment.type;
+    var sentiment = addOns.results.ibm_watson_sentiment.result.docSentiment.type;
     io.emit('sms', { sentiment: sentiment, number: req.body.From });
     console.log(sentiment);
   } else {
