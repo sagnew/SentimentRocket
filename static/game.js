@@ -1,21 +1,21 @@
 const FPS = 60;
 
+// The number of positive messages before velocity increases.
+// If this is 20 then every 20 positive messages will increase the velocity.
+const POSITIVE_MESSAGE_LIMIT = 1;
+
+// The number of negative messages required to fire a laser.
+const NEGATIVE_MESSAGE_LIMIT = 1;
+
 // The number of pixels per frame that the global velocity will increase by
 // when positive sentiment text messages are received.
 //
 // Units: Pixels per frame per net positive sentiment.
 // I.E. Acceleration for positive sentiment text messages.
-const VELOCITY_INTERVAL = 1;
+const VELOCITY_INTERVAL = 5;
 
 // The velocity at which things will move at "hyperspeed"
 const HYPERSPEED_VELOCITY = 30;
-
-// The number of positive messages before velocity increases.
-// If this is 20 then every 20 positive messages will increase the velocity.
-const POSITIVE_MESSAGE_LIMIT = 25;
-
-// The number of negative messages required to fire a laser.
-const NEGATIVE_MESSAGE_LIMIT = 5;
 
 const NUMBER_OF_STARS = 100;
 
